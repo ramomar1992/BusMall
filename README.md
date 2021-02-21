@@ -8,6 +8,9 @@ It is a website that shows 25 groups of featured products' pics to viewers and a
 
 This will help the BusMall startup to determine which products will appear in their proshoures which are going to be available in city buses.
 
-Created by: Omar Ramadan
-Inst: Samer Allaham
-TA: ahya Abu Khalil
+Created by: Omar Ramadan.
+
+Inst: Samer Allaham.
+
+TA: ahya Abu Khalil.
+
