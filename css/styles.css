@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Stick&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Changa&display=swap');
+
+header, footer{
+    height:15vh;
+    width: 100%;
+}
+header{
+    color: black;
+    display:flex;
+    background:linear-gradient(to left,aqua, gold);
+    /* justify-content: space-between; */
+    align-items:center;
+}
+footer{
+    font-family:serif;
+    /* text-align: c; */
+    text-align:center;
+    max-height: 300px;
+        background:linear-gradient(to bottom, aqua, gold);
+
+}
+body{
+    color:whitesmoke;
+    font-family: 'Changa',
+    sans-serif;
+    background:url(../imgs/busses.jpg) ;
+    background-position: center;
+    background-repeat: repeat-y;
+
+
+    /* background-attachment: scroll; */
+    /* background-attachment:100vh ; */
+    font-size:1.2rem;
+    line-height: 2rem;
+    width:85%;
+    margin:0 auto;
+
+}
+/* main, header, footer {
+    filter: blur(8px);
+} */
+
+header img{
+    width: 200px;
+    height:60%;
+    float: left;
+}
+header *{
+    padding:20px;
+}
+main img{
+    width:24%;
+    height:40vh;
+    float: left;
+    padding:1%;
+    box-shadow: 0 0 25px green, 0 0 15px black;
+    
+    /* clear: both; */
+}
+main img:hover{
+    cursor:pointer;
+}
+aside{
+    float: left;
+    width:20%;
+    color: black;
+    background-color: aquamarine;
+    min-height: 60vh;
+    max-height: 60vh;
+    /* padding-top: 20px; */
+    /* height:20%; */
+    /* height: 40vh; */
+    overflow-y: scroll;
+}
+figure{
+    clear:right;
+}
+p{
+    clear: both;
+    padding:20px;
+    font-size: larger;
+    filter: blur(30%);
+    background:linear-gradient(to bottom,rgba(245, 245, 245, 0.329), rgba(0, 0, 0, 0.212))
+}
+
+footer p{
+    width:80%;
+    margin:auto;    
+    padding-top:50px;
+    height:100%;
+    /* padding: 0 50px; */
+}
+h1{
+    font-family: 'Stick',
+    sans-serif;
+    font-size:2rem;
+    font-weight:800;
+    /* margin-top: 30px; */
+}
