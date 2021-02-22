@@ -7,14 +7,20 @@
 // Times the image has been shown
 let clickNum = 0;
 let maxClicks = 25;
+let previousClick = [];
+let productsNames = [];
+let allTtimesChosen = [];
+let allTimesShown = [];
+class ImageObj {
+    constructor(name, source) {
+        this.name = name;
+        this.source = source;
+        this.showTimes = 0;
+        this.timesChosen = 0;
+        ImageObj.list.push(this);
+        productsNames.push(name);
 
-function ImageObj(name, source) {
-    this.name = name;
-    this.source = source;
-    this.showTimes = 0;
-    this.timesChosen = 0;
-    ImageObj.list.push(this);
-
+    }
 }
 ImageObj.list = [];
 
@@ -52,11 +58,16 @@ function randomIndex() {
     return Math.floor(Math.random() * ImageObj.list.length);
 }
 function randomSet(){
-    img1Index = randomIndex();
     do {
+        img1Index = randomIndex();
         img2Index = randomIndex();
         img3Index = randomIndex();
-    } while (img1Index === img2Index || img1Index === img3Index || img2Index === img3Index);
+    }
+    while ((img1Index === img2Index || img1Index === img3Index || img2Index === img3Index) || previousClick.indexOf(img1Index) != -1 || previousClick.indexOf(img2Index) != -1 || previousClick.indexOf(img3Index) != -1);
+    previousClick = [];
+    previousClick.push(img1Index);
+    previousClick.push(img2Index);
+    previousClick.push(img3Index);
     img1.src = ImageObj.list[img1Index].source;
     img1.alt = ImageObj.list[img1Index].name;
     img2.src = ImageObj.list[img2Index].source;
@@ -95,12 +106,15 @@ function clickHandler(e) {
         }
         let finishEl = document.createElement('p');
         finishEl.textContent = "Thank you!! That was it!";
+        finishEl.style.color = 'white';
+        finishEl.style.opacity = '1.0';
+        finishEl.style.lineHeight = '5rem';
         let figure = document.querySelector('figure');
         figure.style.width = '80%';
         figure.style.height = '50vh';
         figure.style.float = 'left';
-        figure.style.backgroundColor = 'pink';
-        figure.style.opacity = '0.5';
+        figure.style.backgroundColor = '#334655';
+        figure.style.opacity = '1.0';
         figure.style.color = 'black'
         figure.style.fontSize = '3rem'
         figure.appendChild(finishEl);
@@ -108,21 +122,79 @@ function clickHandler(e) {
         figure.style.flexDirection = 'column';
         figure.style.justifyContent = 'center';
         figure.style.alignItems = 'center';
-        actionContainer.removeEventListener('click', clickHandler);
         let button = document.createElement('button');
         figure.appendChild(button);
         button.textContent = 'Show Results';
         button.addEventListener('click', viewButtonClick);
+        for (let i = 0; i < ImageObj.list.length; i++){
+            allTtimesChosen.push(ImageObj.list[i].timesChosen);
+            allTimesShown.push(ImageObj.list[i].showTimes);
+        }
+        
+        actionContainer.removeEventListener('click', clickHandler);
+        let context = document.getElementById('barChart').getContext('2d');
+        let chart = new Chart(context, {
+            type: 'bar',
+            data: {
+                labels: productsNames,
+                datasets: [{
+                    hoverBackgroundColor: "rgba(232,105,90,0.8)",
+                    barPercentage: 1,
+                    borderWidth: 2,
+                    label: 'Times Chosen',
+                    backgroundColor: 'darkorange',
+                        borderColor: 'black',
+                        data: allTtimesChosen
+                    },
+                    {
+                        overBackgroundColor: "rgba(100,105,90,0.8)",
+                        barPercentage: 1,
+                        borderWidth: 1,
+                        label: 'Times Shown',
+                        backgroundColor: 'lightgreen',
+                        borderColor: 'darkgreen',
+                        data: allTimesShown
+                    }
+                ]
+            },
+            options: {
+                legend: {
+                    labels: {
+                        fontColor: "yellow",
+                        fontSize: 18
+                    }
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            fontColor: "cyan",
+                            fontSize: 18,
+                            stepSize: 1,
+                            beginAtZero: true
+                        }
+                    }],
+                    xAxes: [{
+                        ticks: {
+                            fontColor: "cyan",
+                            fontSize: 20,
+                            stepSize: 1,
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
     }
-    
     // console.log(ulObj);
     // let liObj;
 }
 
 function viewButtonClick(event) {
-    ulObj.textContent = '';
+    ulObj.textContent = 'Results:';
+    ulObj.style.padding = '2rem';
+    ulObj.style.listStyle = 'lower-greek';
     for (let i = 0; i < ImageObj.list.length; i++) {
-        console.log(ImageObj.list[i].timesChosen);
+        // console.log(ImageObj.list[i].timesChosen);
         if (ImageObj.list[i].timesChosen > 0) {
             let liObj = document.createElement('li');
             ulObj.appendChild(liObj);
@@ -134,5 +206,6 @@ function viewButtonClick(event) {
             }
         }
     }
-    e.target.removeEventListener('click', viewButtonClick);
+            
+    event.target.removeEventListener('click', viewButtonClick);
 }
