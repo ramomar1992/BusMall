@@ -22,6 +22,10 @@ class ImageObj {
 
     }
 }
+ImageObj.prototype.reset = function () {
+    this.showTimes = 0;
+    this.timesChosen = 0;
+}
 ImageObj.list = [];
 
 new ImageObj('bag', 'imgs/bag.jpg');
@@ -30,12 +34,12 @@ new ImageObj('bathroom', 'imgs/bathroom.jpg');
 new ImageObj('boots', 'imgs/boots.jpg');
 new ImageObj('pet-sweep', 'imgs/pet-sweep.jpg');
 new ImageObj('breakfast', 'imgs/breakfast.jpg');
-new ImageObj('bubblegum', 'imgs/bubblegum.jpg');    
+new ImageObj('bubblegum', 'imgs/bubblegum.jpg');
 new ImageObj('chair', 'imgs/chair.jpg');
 new ImageObj('cthulhu', 'imgs/cthulhu.jpg');
 new ImageObj('dog-duck', 'imgs/dog-duck.jpg');
 new ImageObj('dragon', 'imgs/dragon.jpg');
-new ImageObj('pen','imgs/pen.jpg');
+new ImageObj('pen', 'imgs/pen.jpg');
 new ImageObj('scissors', 'imgs/scissors.jpg');
 new ImageObj('shark', 'imgs/shark.jpg');
 new ImageObj('tauntaun', 'imgs/tauntaun.jpg');
@@ -45,6 +49,12 @@ new ImageObj('usb', 'imgs/usb.gif');
 new ImageObj('wine-glass', 'imgs/wine-glass.jpg');
 new ImageObj('water-can', 'imgs/water-can.jpg');
 
+if (localStorage['dataAllItemsChosen']) {
+    for (let i = 0; i < ImageObj.list.length; i++) {
+        ImageObj.list[i].timesChosen = JSON.parse(localStorage.getItem('dataAllItemsChosen'))[i];
+        ImageObj.list[i].showTimes = JSON.parse(localStorage.getItem('dataAllItemsShown'))[i];
+    }
+}
 // Create an algorithm that will randomly generate three unique product images from the images directory and display them side - by - side - by - side in the browser window.
 // For each of the three images, increment its property of times it has been shown by one.
 let img1 = document.getElementById('img1');
@@ -57,7 +67,8 @@ let img3Index;
 function randomIndex() {
     return Math.floor(Math.random() * ImageObj.list.length);
 }
-function randomSet(){
+
+function randomSet() {
     do {
         img1Index = randomIndex();
         img2Index = randomIndex();
@@ -87,6 +98,7 @@ randomSet();
 let ulObj = document.getElementById('results-list');
 let actionContainer = document.getElementById('img-pool');
 actionContainer.addEventListener('click', clickHandler);
+
 function clickHandler(e) {
     if (clickNum < maxClicks) {
         randomSet();
@@ -97,54 +109,101 @@ function clickHandler(e) {
             ImageObj.list[img2Index].timesChosen++;
         } else if (e.target.id === 'img3') {
             ImageObj.list[img3Index].timesChosen++;
-        }
-        
+        } 
+
+
     } else {
-        let imgArr = document.querySelectorAll('figure img');
-        for (let i = 0; i < imgArr.length; i++) {
-            document.querySelector('figure').removeChild(imgArr[i]);
-        }
-        let finishEl = document.createElement('p');
-        finishEl.textContent = "Thank you!! That was it!";
-        finishEl.style.color = 'white';
-        finishEl.style.opacity = '1.0';
-        finishEl.style.lineHeight = '5rem';
-        let figure = document.querySelector('figure');
-        figure.style.width = '80%';
-        figure.style.height = '50vh';
-        figure.style.float = 'left';
-        figure.style.backgroundColor = '#334655';
-        figure.style.opacity = '1.0';
-        figure.style.color = 'black'
-        figure.style.fontSize = '3rem'
-        figure.appendChild(finishEl);
-        figure.style.display = 'flex';
-        figure.style.flexDirection = 'column';
-        figure.style.justifyContent = 'center';
-        figure.style.alignItems = 'center';
-        let button = document.createElement('button');
-        figure.appendChild(button);
-        button.textContent = 'Show Results';
-        button.addEventListener('click', viewButtonClick);
-        for (let i = 0; i < ImageObj.list.length; i++){
-            allTtimesChosen.push(ImageObj.list[i].timesChosen);
-            allTimesShown.push(ImageObj.list[i].showTimes);
-        }
+        if (!document.getElementById('button1')) {
+            
         
-        actionContainer.removeEventListener('click', clickHandler);
-        let context = document.getElementById('barChart').getContext('2d');
+
+            let imgArr = document.querySelectorAll('figure img');
+            for (let i = 0; i < imgArr.length; i++) {
+                document.querySelector('figure').removeChild(imgArr[i]);
+            }
+            let finishEl = document.createElement('p');
+            finishEl.textContent = "Thank you!! That was it!";
+            finishEl.style.color = 'white';
+            finishEl.style.opacity = '1.0';
+            finishEl.style.lineHeight = '5rem';
+            let figure = document.querySelector('figure');
+            figure.style.width = '80%';
+            figure.style.height = '50vh';
+            figure.style.float = 'left';
+            figure.style.backgroundColor = '#334655';
+            figure.style.opacity = '1.0';
+            figure.style.color = 'black'
+            figure.style.fontSize = '3rem'
+            figure.appendChild(finishEl);
+            figure.style.display = 'flex';
+            figure.style.flexDirection = 'column';
+            figure.style.justifyContent = 'center';
+            figure.style.alignItems = 'center';
+            let button = document.createElement('button');
+            figure.appendChild(button);
+            button.textContent = 'Show Results';
+            button.setAttribute('id', 'button1');
+            let button2 = document.createElement('button');
+            figure.appendChild(button2);
+            button2.textContent = 'Clear Results';
+            button2.setAttribute('id', 'button2');
+            // document.querySelector('canvas').clearRect();
+            for (let i = 0; i < ImageObj.list.length; i++) {
+                allTtimesChosen.push(ImageObj.list[i].timesChosen);
+                allTimesShown.push(ImageObj.list[i].showTimes);
+            }
+            localStorage.setItem('dataAllItemsChosen', JSON.stringify(allTtimesChosen));
+            localStorage.setItem('dataAllItemsShown', JSON.stringify(allTimesShown));
+            renderTheCart();
+        } else if (e.target.id == 'button1') {
+            viewButtonClick();
+        } else if (e.target.id == 'button2') {
+            button2Handler();
+        }
+    } 
+}
+
+function viewButtonClick(event) {
+    ulObj.textContent = 'Results:';
+    ulObj.style.padding = '2rem';
+    ulObj.style.listStyle = 'lower-greek';
+    for (let i = 0; i < ImageObj.list.length; i++) {
+        // console.log(ImageObj.list[i].timesChosen);
+        if (ImageObj.list[i].timesChosen > 0) {
+            let liObj = document.createElement('li');
+            ulObj.appendChild(liObj);
+            if (ImageObj.list[i].timesChosen > 1) {
+                liObj.textContent = `${ImageObj.list[i].name} had ${ImageObj.list[i].timesChosen} votes and was seen ${ImageObj.list[i].showTimes} times.`;
+            } else {
+                liObj.textContent = `${ImageObj.list[i].name} had ${ImageObj.list[i].timesChosen} vote and was seen ${ImageObj.list[i].showTimes} time.`;
+
+            }
+        }
+    }
+
+        // event.target.removeEventListener('click', clickHandler);
+
+}
+
+function renderTheCart() {
+    if (localStorage['dataAllItemsChosen']) {
+        let chartParent = document.getElementById('chart');
+        chartParent.innerHTML = '';
+        let canvas = document.createElement('canvas');
+        chartParent.appendChild(canvas);
+        let context = canvas.getContext('2d');
         let chart = new Chart(context, {
             type: 'bar',
             data: {
                 labels: productsNames,
                 datasets: [{
-                    hoverBackgroundColor: "rgba(232,105,90,0.8)",
-                    barPercentage: 1,
-                    borderWidth: 2,
-                    label: 'Times Chosen',
-                    backgroundColor: 'darkorange',
+                        hoverBackgroundColor: "rgba(232,105,90,0.8)",
+                        barPercentage: 1,
+                        borderWidth: 2,
+                        label: 'Times Chosen',
+                        backgroundColor: 'darkorange',
                         borderColor: 'black',
-                        data: allTtimesChosen
+                        data: JSON.parse(localStorage.getItem('dataAllItemsChosen'))
                     },
                     {
                         overBackgroundColor: "rgba(100,105,90,0.8)",
@@ -153,7 +212,7 @@ function clickHandler(e) {
                         label: 'Times Shown',
                         backgroundColor: 'lightgreen',
                         borderColor: 'darkgreen',
-                        data: allTimesShown
+                        data: JSON.parse(localStorage.getItem('dataAllItemsShown'))
                     }
                 ]
             },
@@ -185,27 +244,16 @@ function clickHandler(e) {
             }
         });
     }
-    // console.log(ulObj);
-    // let liObj;
 }
+renderTheCart();
 
-function viewButtonClick(event) {
-    ulObj.textContent = 'Results:';
-    ulObj.style.padding = '2rem';
-    ulObj.style.listStyle = 'lower-greek';
+function button2Handler(event) {
+    localStorage.clear();
+    allTimesShown = [];
+    allTtimesChosen = [];
     for (let i = 0; i < ImageObj.list.length; i++) {
-        // console.log(ImageObj.list[i].timesChosen);
-        if (ImageObj.list[i].timesChosen > 0) {
-            let liObj = document.createElement('li');
-            ulObj.appendChild(liObj);
-            if (ImageObj.list[i].timesChosen > 1) {
-                liObj.textContent = `${ImageObj.list[i].name} had ${ImageObj.list[i].timesChosen} votes and was seen ${ImageObj.list[i].showTimes} times.`;
-            } else {
-                liObj.textContent = `${ImageObj.list[i].name} had ${ImageObj.list[i].timesChosen} vote and was seen ${ImageObj.list[i].showTimes} time.`;
-
-            }
-        }
+        ImageObj.list[i].reset();        
     }
-            
-    event.target.removeEventListener('click', viewButtonClick);
+    document.querySelector('canvas').style.display = 'none';
+    // event.target.removeEventListener('click', clickHandler);
 }
